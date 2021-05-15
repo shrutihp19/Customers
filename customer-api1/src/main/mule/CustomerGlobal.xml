@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="d8d30465-87a4-4764-b60b-7dad386e69f7" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
+	</db:config>
+		<http:listener-config name="customer-api-httpListenerConfig">
+        <http:listener-connection host="${http.host}" port="${http.port}" />
+    </http:listener-config>
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="35b5238e-966c-4d18-9ccf-a56efb434f98" file="customer-DEV.yaml" />
+	<configuration doc:name="Configuration" doc:id="229b1718-b6c7-4801-82f1-455d9bb60997" defaultErrorHandler-ref="customersGlobalError_Handler" />
+	<error-handler name="customersGlobalError_Handler" doc:id="01126902-9dea-4797-8190-22b509d5ffb2" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="63bdf6f9-9906-4667-95cc-ae57eacabc50" when="#[error.errorType=='DB1:BAD_SQL_SYNTAX']" >
+			<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="652b7bff-140e-4365-aeea-9740be9bf1a8" />
+			<set-variable value="500" doc:name="httpstatus" doc:id="d69e8671-b08d-4724-85ff-e21b9bfeea96" variableName="httpstatus" />
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="abe9b71d-f225-4ce0-93d0-a441d316ca01" when="#[error.errorType=='DB2:BAD_SQL_SYNTAX']" >
+			<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="d900eac6-c542-441b-b698-792a88b6bbd9" />
+			<set-variable value="500" doc:name="httpstatus" doc:id="9374e999-5cc8-45df-bcb4-a2c1e992ba53" variableName="httpstatus" />
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="56df929e-d2f5-4313-a9ab-185f7f4e4e66" type="ANY" >
+			<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="c619e1e9-7dee-4f71-96cf-b546709ff37a" />
+			<set-variable value="500" doc:name="httpstatus" doc:id="ceac27ef-12d3-462a-b7f3-ae620186bad9" variableName="httpstatus" />
+		</on-error-continue>
+	</error-handler>
+   
+	
+	
+	
+	
+	
+	
+	
+</mule>

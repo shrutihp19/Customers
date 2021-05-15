@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="customerImplementation-test-suite.xml" />
+	<munit:test name="customerImplementation-test-suite-getAllcustomerFlowTest" doc:id="e90c14d2-eea3-49f1-8ba4-d7102e47874f" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="d8c46798-1a56-4292-be4e-ad3138798558" />
+			<flow-ref doc:name="Flow-ref to getAllcustomerFlow" doc:id="e84833b8-3c9d-43a9-9f4d-7001a4ed411b" name="getAllcustomerFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="77d6faf9-a4cd-472a-8404-2860f4d7c1ce" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="error in get all flow"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="customerImplementation-test-suite-getcustomerbyIdFlowTest" doc:id="e1fba2ef-4431-450e-92ad-a60b270aa33d" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="f8a041c4-fcd1-44fd-9a6b-c83f401b4d5a" />
+			<flow-ref doc:name="Flow-ref to getcustomerbyIdFlow" doc:id="0e1e9c87-311f-4631-9a3a-ef5151addb0f" name="getcustomerbyIdFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6ca707a9-17e3-4120-bf02-d14befd0d17e" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="error in get by id flow"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="customerImplementation-test-suite-deletecustomerFlowTest" doc:id="a371aed6-472d-4519-8b31-63f0986dce77" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="f5b47b80-793a-4bda-bdfb-98b7efccf08d" />
+			<flow-ref doc:name="Flow-ref to deletecustomerFlow" doc:id="6e6242c6-6094-46cc-a92c-acdb40bc9b86" name="deletecustomerFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c49386cb-f6cb-42ee-8075-6bc14ec7c0b9" actual="#[payload.message]" message="error in delete by id flow" expected='#["The customer details are deleted"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="customerImplementation-test-suite-postcustomerFlowTest" doc:id="5930d3fa-477b-4c19-9e24-298010afc579" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="de3b3200-96da-4d9c-863e-ef9e6f94d88d" />
+			<flow-ref doc:name="Flow-ref to postcustomerFlow" doc:id="6ace2cc3-186e-49ee-974f-e7ab23d93f06" name="postcustomerFlow"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3ec319df-720c-4f85-a210-f20b1e13e093" actual="#[vars.httpstatus]" expected="201" message="error in post flow"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="customerImplementation-test-suite-modifycustomerFlowTest" doc:id="410089b7-f58c-4d67-8f7e-c80321052afa" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="3cbf49e6-6fd7-45e1-beac-f6cc763f06b3" />
+			<flow-ref doc:name="Flow-ref to modifycustomerFlow" doc:id="a92704f9-a390-4031-ac73-b86ff09b2a46" name="modifycustomerFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="0dc26f0b-28d5-4f37-a959-3c72c2283622" actual="#[payload.message]" expected='#["The customer details are modified for the CustomerNumber"]' message="error in patch flow"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="customerImplementation-test-suite-UpdatecustomerFlowTest" doc:id="8aff75b8-54d1-4418-bcec-cb4366bb4b29" description="Test">
+		<munit:execution >
+			<munit:set-null-payload doc:name="Set null payload" doc:id="511b7c85-9c01-44de-af40-242b7870943b" />
+			<flow-ref doc:name="Flow-ref to UpdatecustomerFlow" doc:id="48e319c5-24fb-4bd8-9212-3de5bdd00bb6" name="UpdatecustomerFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d23b7d02-f2af-4324-85d9-224eee6dd511" actual="#[vars.httpStatus]" expected="201" message="error in put flow"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

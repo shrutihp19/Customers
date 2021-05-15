@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="getAllcustomerFlow" doc:id="107bf693-b2be-466d-98bc-8d0d7d381f06" >
+		<db:select doc:name="Select" doc:id="ef8cf51e-d325-4359-821d-a015bc400e29" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from Customers]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message to json" doc:id="6759cb2c-1b71-4ef5-a3e1-649a55bbd868" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	customerNumber: payload01.customerNumber,
+	customerName: payload01.customerName default "",
+	phone: payload01.phone as Number default 0,
+	addressLine1: payload01.addressLine1 default "",
+	addressLine2: payload01.addressLine2 default "",
+	city: payload01.city default "",
+	state: payload01.state default "",
+	postalcode: payload01.postalCode as Number default 0,
+	country: payload01.country default "",
+	salesRepEmployeeNumber: payload01.salesRepEmployeeNumber default 0,
+	creditLimit: payload01.creditLimit default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="getcustomerbyIdFlow" doc:id="68a944ef-30a3-4881-96ab-b98d9010106b" >
+		<db:query-single doc:name="Query single" doc:id="b3f0390b-d75c-4689-8367-f91fa6210aba" config-ref="Database_Config">
+			<error-mapping sourceType="DB:BAD_SQL_SYNTAX" targetType="DB1:BAD_SQL_SYNTAX" />
+			<db:sql ><![CDATA[select * from Customers where customerNumber= :customerNumber]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerNumber: vars.customerNumber
+}]]]></db:input-parameters>
+		</db:query-single>
+		<ee:transform doc:name="Transform Message to Json" doc:id="13bef02f-aeec-4e77-9a94-77882e365213" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	customerNumber: payload.customerNumber,
+	customerName: payload.customerName default "",
+	phone: payload.phone as Number default 0,
+	addressLine1: payload.addressLine1 default "",
+	addressLine2: payload.addressLine2 default "",
+	city: payload.city default "",
+	state: payload.state default "",
+	postalcode: payload.postalCode as Number default 0,
+	country: payload.country default "",
+	salesRepEmployeeNumber: payload.salesRepEmployeeNumber default 0,
+	creditLimit: payload.creditLimit default 0
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deletecustomerFlow" doc:id="189e0c64-fe4e-4302-8653-e7ff16908bee" >
+		<db:delete doc:name="Delete" doc:id="39a010d5-298d-4c83-94dc-d7af040eaaae" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from Customers where customerNumber= :customerNumber]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerNumber: vars.customerNumber
+}]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message to json" doc:id="119d2765-8f8e-460f-a948-b9b1986f2ee3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "The customer details are deleted"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="variableSub_Flow" doc:id="fc854d80-d831-48ea-ac95-5bb4da0ae386" >
+		<set-variable value="#[payload.customerName]" doc:name="customerName" doc:id="2bc448f3-a099-47d5-be97-07a8cf8df239" variableName="customerName" />
+		<set-variable value="#[payload.phone]" doc:name="phone" doc:id="183070b8-73b3-4411-883a-ab900a6f52dd" variableName="phone" />
+		<set-variable value="#[payload.addressLine1]" doc:name="addressLine1" doc:id="a45f8850-6bd1-4acd-81fa-0371001d1f0b" variableName="addressLine1" />
+		<set-variable value="#[payload.addressLine2]" doc:name="addressLine2" doc:id="c10b30d1-958f-46eb-b8c4-9ca52663876e" variableName="addressLine2" />
+		<set-variable value="#[payload.city]" doc:name="city" doc:id="cb92b62b-d906-4dd2-91a6-e58038e1722a" variableName="city" />
+		<set-variable value="#[payload.state]" doc:name="state" doc:id="2f36aa2e-26a0-4a4e-8cd5-4b0ab6b737f2" variableName="state" />
+		<set-variable value="#[payload.postalcode]" doc:name="postalcode" doc:id="703e6d89-be08-4916-b551-bf125b2c6420" variableName="postalcode" />
+		<set-variable value="#[payload.country]" doc:name="country" doc:id="dc9eedd8-67b7-4741-a218-da46420d676f" variableName="country" />
+		<set-variable value="#[payload.salesRepEmployeeNumber]" doc:name="salesRepEmployeeNumber" doc:id="bd043534-c7fd-4c6d-ab63-d1e6af5a1555" variableName="salesRepEmployeeNumber" />
+		<set-variable value="#[payload.creditLimit]" doc:name="creditLimit" doc:id="70a6db86-c963-4f38-b0a4-9548f573a22b" variableName="creditLimit" />
+	</sub-flow>
+	<flow name="postcustomerFlow" doc:id="7f4eefa9-2c90-4f66-bd48-64a83199352d" >
+		<flow-ref doc:name="variableSub_Flow" doc:id="43ecb539-c0f0-4474-9b28-e9760aeaef66" name="variableSub_Flow"/>
+		<db:insert doc:name="Insert" doc:id="b7a844c1-c399-45de-983e-03a8a9cd5966" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into Customers(customerNumber,customerName,phone,addressLine1,addressLine2,city,
+state,postalCode,country,salesRepEmployeeNumber,creditLimit)
+values(:customerNumber,:customerName,:phone,:addressLine1,
+:addressLine2,:city,:state,:postalCode,:country,:salesRepEmployeeNumber,:creditLimit)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerNumber: payload.customerNumber,
+	customerName: vars.customerName,
+	phone: vars.phone,
+	addressLine1: vars.addressLine1,
+	addressLine2: vars.addressLine2,
+	city: vars.city,
+	state: vars.state,
+	postalCode: vars.postalcode,
+	country: vars.country,
+	salesRepEmployeeNumber: vars.salesRepEmployeeNumber,
+	creditLimit: vars.creditLimit
+	}]]]></db:input-parameters>
+		</db:insert>
+		<db:query-single doc:name="Query single" doc:id="2219e8e7-8799-4b61-a6ff-256915618a5e" config-ref="Database_Config">
+			<error-mapping sourceType="DB:BAD_SQL_SYNTAX" targetType="DB2:BAD_SQL_SYNTAX" />
+			<db:sql ><![CDATA[select max(customerNumber) from Customers]]></db:sql>
+		</db:query-single>
+		<ee:transform doc:name="Transform Message to json" doc:id="c65376bc-78c7-4f0a-b5c9-5d0bcafd79cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"customer details are added" ++ payload."max(customerNumber)"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="201" doc:name="httpstatus" doc:id="5aa87a98-a16b-4ba1-89c8-6e1b8962cfab" variableName="httpstatus" />
+	</flow>
+	<flow name="modifycustomerFlow" doc:id="8849e209-6ea6-4ea2-8905-7ce2206a6ed4" >
+		<flow-ref doc:name="variableSub_Flow" doc:id="427b7eeb-6fba-40c6-98d4-d27cf8ecf467" name="variableSub_Flow"/>
+		<db:update doc:name="Update" doc:id="c626ec8c-3ac9-4121-b8d2-ee680923183d" config-ref="Database_Config">
+			<db:sql ><![CDATA[update  Customers set customerName= :customerName,phone= :phone,addressLine1= :addressLine1,
+addressLine2= :addressLine2,city= :city,
+state= :state,postalCode= :postalCode,country= :country,salesRepEmployeeNumber= :salesRepEmployeeNumber,
+creditLimit= :creditLimit where customerNumber= :customerNumber]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerNumber: vars.customerNumber,
+	customerName: vars.customerName,
+	phone: vars.phone,
+	addressLine1: vars.addressLine1,
+	addressLine2: vars.addressLine2,
+	city: vars.city,
+	state: vars.state,
+	postalCode: vars.postalcode,
+	country: vars.country,
+	salesRepEmployeeNumber: vars.salesRepEmployeeNumber,
+	creditLimit: vars.creditLimit
+	}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Transform Message to json" doc:id="500d3183-ff92-4970-85c4-be1cefaa9430" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "The customer details are modified for the CustomerNumber" 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="UpdatecustomerFlow" doc:id="2e985c1c-01f9-46c4-b76d-820b4fb3f7c7" >
+		<flow-ref doc:name="variableSub_Flow" doc:id="af2e8a87-0c54-4542-81e5-3fa73e21797a" name="variableSub_Flow"/>
+		<db:query-single doc:name="Query single" doc:id="e5ff4609-acf1-4b96-b507-193f9c31a70d" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from Customers where customerNumber= :customerNumber]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	customerNumber: vars.customerNumber
+}]]]></db:input-parameters>
+		</db:query-single>
+		<choice doc:name="Choice" doc:id="c3682d67-5474-4545-b747-4f586d6cab59" >
+			<when expression="sizeOf(payload)&gt;0">
+				<db:update doc:name="Update" doc:id="5c131b66-bfd0-46e4-9775-5be12081364b" config-ref="Database_Config" >
+					<db:sql ><![CDATA[update  Customers set customerName= :customerName,phone= :phone,addressLine1= :addressLine1,
+addressLine2= :addressLine2,city= :city,
+state= :state,postalCode= :postalCode,country= :country,salesRepEmployeeNumber= :salesRepEmployeeNumber,
+creditLimit= :creditLimit where customerNumber= :customerNumber]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	customerNumber: vars.customerNumber,
+	customerName: vars.customerName,
+	phone: vars.phone,
+	addressLine1: vars.addressLine1,
+	addressLine2: vars.addressLine2,
+	city: vars.city,
+	state: vars.state,
+	postalCode: vars.postalcode,
+	country: vars.country,
+	salesRepEmployeeNumber: vars.salesRepEmployeeNumber,
+	creditLimit: vars.creditLimit
+	}]]]></db:input-parameters>
+				</db:update>
+			</when>
+			<otherwise >
+				<db:insert doc:name="Insert" doc:id="20d2b95c-46a8-4c2d-aefd-e80229622503" config-ref="Database_Config" >
+					<db:sql ><![CDATA[insert into Customers(customerNumber,customerName,phone,addressLine1,addressLine2,city,
+state,postalCode,country,salesRepEmployeeNumber,creditLimit)
+values(:customerNumber,:customerName,:phone,:addressLine1,
+:addressLine2,:city,:state,:postalCode,:country,:salesRepEmployeeNumber,:creditLimit)]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	customerNumber: payload.customerNumber,
+	customerName: vars.customerName,
+	phone: vars.phone,
+	addressLine1: vars.addressLine1,
+	addressLine2: vars.addressLine2,
+	city: vars.city,
+	state: vars.state,
+	postalCode: vars.postalcode,
+	country: vars.country,
+	salesRepEmployeeNumber: vars.salesRepEmployeeNumber,
+	creditLimit: vars.creditLimit
+	}]]]></db:input-parameters>
+				</db:insert>
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message to json" doc:id="e2b38cbb-a4d3-4dad-80a2-8d66e51c9969" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "The customer details are updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="201" doc:name="httpStatus" doc:id="48feca75-8d00-46df-a24f-97b8eda7269f" variableName="httpStatus" />
+	</flow>
+</mule>
